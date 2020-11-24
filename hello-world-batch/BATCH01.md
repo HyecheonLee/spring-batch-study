@@ -1,6 +1,6 @@
 # 스프링 배치01
 
-참고 블로그 [https://juneyr.dev/2019-07-24/spring-batch-tasklet]
+[juneyr.dev 블로그 참고]:https://juneyr.dev/2019-07-24/spring-batch-tasklet
 > 스프링 기본 설정에 @EnableBatchProcessing 어노테이션 추가 하기.  
 > 스프링 배치시 필수로 사용해야 합니다.
 
