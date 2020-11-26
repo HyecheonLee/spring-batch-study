@@ -5,6 +5,7 @@ import com.hyecheon.helloworldbatch.reader.*
 import com.hyecheon.helloworldbatch.wirter.*
 import org.springframework.batch.core.*
 import org.springframework.batch.core.configuration.annotation.*
+import org.springframework.batch.core.launch.support.*
 import org.springframework.batch.core.step.tasklet.*
 import org.springframework.batch.item.*
 import org.springframework.batch.repeat.*
@@ -61,6 +62,7 @@ class BatchConfiguration(
 	@Bean
 	public fun helloWorldJob() = run {
 		jobs.get("helloWorldJob")
+			.incrementer(RunIdIncrementer())
 			.listener(jobExecutionListener)
 			.start(step1())
 			.next(step2())
