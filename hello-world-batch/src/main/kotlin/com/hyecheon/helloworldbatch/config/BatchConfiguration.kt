@@ -12,10 +12,12 @@ import org.springframework.batch.item.*
 import org.springframework.batch.item.file.*
 import org.springframework.batch.item.file.mapping.*
 import org.springframework.batch.item.file.transform.*
+import org.springframework.batch.item.xml.*
 import org.springframework.batch.repeat.*
 import org.springframework.beans.factory.annotation.*
 import org.springframework.context.annotation.*
 import org.springframework.core.io.*
+import org.springframework.oxm.jaxb.*
 
 
 /**
@@ -91,12 +93,27 @@ class BatchConfiguration(
 		return reader
 	}
 
+	@StepScope
+	@Bean
+	fun xmlItemReader(
+		@Value("#{jobParameters['inputFile']}") inputFile: FileSystemResource? = null
+	) = run {
+		StaxEventItemReader<Product>().apply {
+			setResource(inputFile!!)
+			//need to let reader to know which tags describe the domain object
+			setFragmentRootElementName("product")
+			setUnmarshaller(Jaxb2Marshaller().apply { setClassesToBeBound(Product::class.java) })
+		}
+
+	}
+
 	@Bean
 	fun step2() = run {
 		steps.get("step2")
 			.chunk<Product, Product>(3)
 //			.reader(reader())
-			.reader(flatFileItemReade2())
+//			.reader(flatFileItemReade2())
+			.reader(xmlItemReader())
 			.writer(ConsoleItemWriter())
 			.build()
 	}
@@ -119,7 +136,7 @@ class BatchConfiguration(
 	}
 
 	@Bean
-	public fun helloWorldJob() = run {
+	fun helloWorldJob() = run {
 		jobs.get("helloWorldJob")
 			.incrementer(RunIdIncrementer())
 			.listener(jobExecutionListener)
