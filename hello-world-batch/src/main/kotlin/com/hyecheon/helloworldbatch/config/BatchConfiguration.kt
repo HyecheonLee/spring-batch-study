@@ -13,6 +13,7 @@ import org.springframework.batch.item.database.*
 import org.springframework.batch.item.file.*
 import org.springframework.batch.item.file.mapping.*
 import org.springframework.batch.item.file.transform.*
+import org.springframework.batch.item.json.*
 import org.springframework.batch.item.xml.*
 import org.springframework.batch.repeat.*
 import org.springframework.beans.factory.annotation.*
@@ -122,6 +123,13 @@ class BatchConfiguration(
 		}
 	}
 
+	@Bean
+	fun jsonItemReader(
+		@Value("#{jobParameters['inputFile']}") inputFile: FileSystemResource? = null
+	) = run {
+		println(inputFile)
+		JsonItemReader(inputFile!!, JacksonJsonObjectReader(Product::class.java))
+	}
 
 	@Bean
 	fun step2() = run {
@@ -129,8 +137,9 @@ class BatchConfiguration(
 			.chunk<Product, Product>(3)
 //			.reader(reader())
 //			.reader(flatFileItemReade2())
-//			.reader(xmlItemReader())
-			.reader(jdbcCursorItemReader())
+			.reader(xmlItemReader())
+//			.reader(jdbcCursorItemReader())
+//			.reader(jsonItemReader())
 			.writer(ConsoleItemWriter())
 			.build()
 	}
