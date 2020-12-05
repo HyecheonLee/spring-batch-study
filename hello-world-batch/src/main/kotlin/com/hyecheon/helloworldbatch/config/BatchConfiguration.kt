@@ -3,18 +3,21 @@ package com.hyecheon.helloworldbatch.config
 import com.hyecheon.helloworldbatch.model.*
 import com.hyecheon.helloworldbatch.processor.*
 import com.hyecheon.helloworldbatch.reader.*
+import com.hyecheon.helloworldbatch.service.*
 import com.hyecheon.helloworldbatch.wirter.*
 import org.springframework.batch.core.*
 import org.springframework.batch.core.configuration.annotation.*
 import org.springframework.batch.core.launch.support.*
 import org.springframework.batch.core.step.tasklet.*
 import org.springframework.batch.item.*
+import org.springframework.batch.item.adapter.ItemReaderAdapter
 import org.springframework.batch.item.database.*
 import org.springframework.batch.item.file.*
 import org.springframework.batch.item.file.mapping.*
 import org.springframework.batch.item.file.transform.*
 import org.springframework.batch.item.json.*
 import org.springframework.batch.item.xml.*
+import org.springframework.batch.jsr.item.*
 import org.springframework.batch.repeat.*
 import org.springframework.beans.factory.annotation.*
 import org.springframework.context.annotation.*
@@ -35,7 +38,8 @@ class BatchConfiguration(
 	val steps: StepBuilderFactory,
 	val jobExecutionListener: JobExecutionListener,
 	val stepExecutionListener: StepExecutionListener,
-	val mariaDataSource: DataSource
+	val mariaDataSource: DataSource,
+//	val productService: ProductService
 ) {
 
 	@Bean
@@ -131,6 +135,16 @@ class BatchConfiguration(
 		JsonItemReader(inputFile!!, JacksonJsonObjectReader(Product::class.java))
 	}
 
+/*
+	@Bean
+	fun serviceItemReader() = run {
+		ItemReaderAdapter<Product>().apply {
+			setTargetObject(productService)
+			setTargetMethod("getProducts")
+		}
+	}
+*/
+
 	@Bean
 	fun step2() = run {
 		steps.get("step2")
@@ -140,6 +154,7 @@ class BatchConfiguration(
 //			.reader(xmlItemReader())
 //			.reader(jdbcCursorItemReader())
 			.reader(jsonItemReader())
+//			.reader(serviceItemReader())
 			.writer(ConsoleItemWriter())
 			.build()
 	}
