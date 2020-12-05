@@ -123,11 +123,11 @@ class BatchConfiguration(
 		}
 	}
 
+	@StepScope
 	@Bean
 	fun jsonItemReader(
 		@Value("#{jobParameters['inputFile']}") inputFile: FileSystemResource? = null
 	) = run {
-		println(inputFile)
 		JsonItemReader(inputFile!!, JacksonJsonObjectReader(Product::class.java))
 	}
 
@@ -137,9 +137,9 @@ class BatchConfiguration(
 			.chunk<Product, Product>(3)
 //			.reader(reader())
 //			.reader(flatFileItemReade2())
-			.reader(xmlItemReader())
+//			.reader(xmlItemReader())
 //			.reader(jdbcCursorItemReader())
-//			.reader(jsonItemReader())
+			.reader(jsonItemReader())
 			.writer(ConsoleItemWriter())
 			.build()
 	}
