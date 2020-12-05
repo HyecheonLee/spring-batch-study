@@ -33,13 +33,14 @@ import javax.sql.*
  */
 @Configuration
 @EnableBatchProcessing
-class BatchConfiguration(
+open class BatchConfiguration(
 	val jobs: JobBuilderFactory,
 	val steps: StepBuilderFactory,
 	val jobExecutionListener: JobExecutionListener,
 	val stepExecutionListener: StepExecutionListener,
 	val mariaDataSource: DataSource,
-//	val productService: ProductService
+	val productService: ProductService,
+	val productServiceAdapter: ProductServiceAdapter
 ) {
 
 	@Bean
@@ -135,15 +136,13 @@ class BatchConfiguration(
 		JsonItemReader(inputFile!!, JacksonJsonObjectReader(Product::class.java))
 	}
 
-/*
 	@Bean
 	fun serviceItemReader() = run {
 		ItemReaderAdapter<Product>().apply {
-			setTargetObject(productService)
-			setTargetMethod("getProducts")
+			setTargetObject(productServiceAdapter)
+			setTargetMethod("nextProduct")
 		}
 	}
-*/
 
 	@Bean
 	fun step2() = run {
@@ -153,8 +152,8 @@ class BatchConfiguration(
 //			.reader(flatFileItemReade2())
 //			.reader(xmlItemReader())
 //			.reader(jdbcCursorItemReader())
-			.reader(jsonItemReader())
-//			.reader(serviceItemReader())
+//			.reader(jsonItemReader())
+			.reader(serviceItemReader())
 			.writer(ConsoleItemWriter())
 			.build()
 	}

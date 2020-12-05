@@ -6,7 +6,7 @@ import org.springframework.boot.runApplication
 
 @EnableBatchProcessing
 @SpringBootApplication
-class HelloWorldBatchApplication
+open class HelloWorldBatchApplication
 
 fun main(args: Array<String>) {
 	runApplication<HelloWorldBatchApplication>(*args)
