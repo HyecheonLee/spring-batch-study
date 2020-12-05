@@ -9,6 +9,7 @@ import org.springframework.batch.core.configuration.annotation.*
 import org.springframework.batch.core.launch.support.*
 import org.springframework.batch.core.step.tasklet.*
 import org.springframework.batch.item.*
+import org.springframework.batch.item.database.*
 import org.springframework.batch.item.file.*
 import org.springframework.batch.item.file.mapping.*
 import org.springframework.batch.item.file.transform.*
@@ -17,7 +18,9 @@ import org.springframework.batch.repeat.*
 import org.springframework.beans.factory.annotation.*
 import org.springframework.context.annotation.*
 import org.springframework.core.io.*
+import org.springframework.jdbc.core.*
 import org.springframework.oxm.jaxb.*
+import javax.sql.*
 
 
 /**
@@ -30,7 +33,8 @@ class BatchConfiguration(
 	val jobs: JobBuilderFactory,
 	val steps: StepBuilderFactory,
 	val jobExecutionListener: JobExecutionListener,
-	val stepExecutionListener: StepExecutionListener
+	val stepExecutionListener: StepExecutionListener,
+	val mariaDataSource: DataSource
 ) {
 
 	@Bean
@@ -108,12 +112,25 @@ class BatchConfiguration(
 	}
 
 	@Bean
+	fun jdbcCursorItemReader() = run {
+		JdbcCursorItemReader<Product>().apply {
+			this.dataSource = mariaDataSource
+			sql = "select product_id, product_name, prod_desc as product_desc, unit, price from products"
+			setRowMapper(BeanPropertyRowMapper<Product>().apply {
+				setMappedClass(Product::class.java)
+			})
+		}
+	}
+
+
+	@Bean
 	fun step2() = run {
 		steps.get("step2")
 			.chunk<Product, Product>(3)
 //			.reader(reader())
 //			.reader(flatFileItemReade2())
-			.reader(xmlItemReader())
+//			.reader(xmlItemReader())
+			.reader(jdbcCursorItemReader())
 			.writer(ConsoleItemWriter())
 			.build()
 	}
