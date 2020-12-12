@@ -1,12 +1,12 @@
 package com.hyecheon.helloworldbatch
 
 import org.springframework.batch.core.configuration.annotation.*
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.runApplication
+import org.springframework.boot.*
+import org.springframework.boot.autoconfigure.*
 
 @EnableBatchProcessing
 @SpringBootApplication
-open class HelloWorldBatchApplication
+class HelloWorldBatchApplication
 
 fun main(args: Array<String>) {
 	runApplication<HelloWorldBatchApplication>(*args)
